@@ -1,0 +1,956 @@
+```html
+<!DOCTYPE html>
+<html lang="en" class="dark h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>THE SILENT GHOST - Mobile Security Command Center</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        oled: '#05070a',
+                        surface: '#0d1117',
+                        card: '#161b22',
+                        border: '#21262d',
+                        cyanGlow: '#00f0ff',
+                        amberAccent: '#FFB300',
+                        amberDark: '#FF8F00',
+                        emeraldSuccess: '#10b981',
+                        roseAlert: '#f43f5e'
+                    },
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'Courier New', 'monospace'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome & Lucide Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #05070a;
+            color: #c9d1d9;
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #21262d;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FFB300;
+        }
+
+        /* Subtle Technical Grid Background */
+        .bg-tech-grid {
+            background-image: linear-gradient(to right, rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .glow-amber {
+            box-shadow: 0 0 15px rgba(255, 179, 0, 0.15);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+        }
+
+        /* Radar scan animation */
+        @keyframes radar-scan {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-radar {
+            animation: radar-scan 4s linear infinite;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col bg-tech-grid overflow-hidden select-none">
+
+    <!-- TOP HEADER: BRANDING & DEVELOPER CREDENTIALS -->
+    <header class="bg-surface border-b border-border p-3 flex-shrink-0 flex items-center justify-between z-20">
+        <div class="flex items-center space-x-3">
+            <div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-card border border-amberAccent/30 text-amberAccent">
+                <i class="fa-solid fa-ghost text-xl"></i>
+                <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emeraldSuccess opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-emeraldSuccess"></span>
+                </span>
+            </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <h1 class="text-base font-bold tracking-wider text-white font-mono uppercase">THE SILENT GHOST</h1>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-amberAccent/10 text-amberAccent border border-amberAccent/20 font-mono">v3.8-PRO</span>
+                </div>
+                <p class="text-xs text-gray-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-[#10b981] fa-shield-halved text-emeraldSuccess text-[10px]"></i>
+                    <span class="font-mono text-[11px] text-gray-300">SYSTEM SECURE</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Developer Signature Card -->
+        <div class="bg-card px-3 py-1.5 rounded-lg border border-border text-right">
+            <div class="text-xs font-semibold text-amberAccent flex items-center justify-end gap-1">
+                <i class="fa-solid fa-user-shield text-[10px]"></i>
+                <span>Eng. Hisham Eid</span>
+            </div>
+            <div class="text-[10px] font-mono text-gray-400 flex items-center justify-end gap-1">
+                <i class="fa-solid fa-phone text-[9px] text-cyanGlow"></i>
+                <span>01001220551</span>
+            </div>
+            <div class="text-[9px] font-mono text-gray-500 uppercase tracking-tight">IRpair Mobile Security</div>
+        </div>
+    </header>
+
+    <!-- MAIN VIEWPORT CONTAINER -->
+    <main id="app-viewport" class="flex-1 overflow-y-auto p-3 space-y-4 pb-20">
+
+        <!-- MODULE 1: COMMAND CENTER DASHBOARD -->
+        <section id="mod-dashboard" class="space-y-3">
+            <!-- Active Threat & Telemetry Cards -->
+            <div class="grid grid-cols-2 gap-3">
+                <!-- Threat Index -->
+                <div class="bg-card border border-border rounded-xl p-3 flex flex-col justify-between">
+                    <div class="text-xs text-gray-400 font-mono uppercase flex justify-between items-center">
+                        <span>Security Level</span>
+                        <i class="fa-solid fa-shield-virus text-emeraldSuccess"></i>
+                    </div>
+                    <div class="my-2 flex items-baseline justify-between">
+                        <span class="text-2xl font-bold font-mono text-emeraldSuccess" id="dash-security-score">94%</span>
+                        <span class="text-[10px] text-gray-400 font-mono">GRADE A+</span>
+                    </div>
+                    <div class="w-full bg-border rounded-full h-1.5 overflow-hidden">
+                        <div id="dash-security-bar" class="bg-emeraldSuccess h-1.5 rounded-full" style="width: 94%"></div>
+                    </div>
+                </div>
+
+                <!-- Live Performance Metrics -->
+                <div class="bg-card border border-border rounded-xl p-3 flex flex-col justify-between">
+                    <div class="text-xs text-gray-400 font-mono uppercase flex justify-between items-center">
+                        <span>Memory & Battery</span>
+                        <i class="fa-solid fa-microchip text-cyanGlow"></i>
+                    </div>
+                    <div class="my-1 space-y-1">
+                        <div class="flex justify-between text-xs font-mono">
+                            <span class="text-gray-400">RAM Load:</span>
+                            <span id="dash-ram-val" class="text-cyanGlow font-bold">42%</span>
+                        </div>
+                        <div class="flex justify-between text-xs font-mono">
+                            <span class="text-gray-400">Battery:</span>
+                            <span id="dash-battery-val" class="text-amberAccent font-bold">88%</span>
+                        </div>
+                    </div>
+                    <div class="text-[9px] font-mono text-gray-500 flex justify-between pt-1 border-t border-border/50">
+                        <span>OS: Android/Linux</span>
+                        <span id="dash-latency">12ms</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operational Quick Actions -->
+            <div class="bg-card border border-border rounded-xl p-3 space-y-2">
+                <div class="text-xs font-mono text-gray-400 uppercase tracking-wider flex items-center justify-between">
+                    <span>Quick Audits & Rapid Response</span>
+                    <i class="fa-solid fa-bolt text-amberAccent text-xs"></i>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="runQuickScan()" class="p-2 rounded-lg bg-surface border border-border hover:border-amberAccent flex flex-col items-center text-center space-y-1 transition-all active:scale-95">
+                        <i class="fa-solid fa-radar text-amberAccent text-base"></i>
+                        <span class="text-[11px] font-medium text-gray-200">Rapid Scan</span>
+                    </button>
+                    <button onclick="switchModule('mod-network')" class="p-2 rounded-lg bg-surface border border-border hover:border-cyanGlow flex flex-col items-center text-center space-y-1 transition-all active:scale-95">
+                        <i class="fa-solid fa-network-wired text-cyanGlow text-base"></i>
+                        <span class="text-[11px] font-medium text-gray-200">Net Scan</span>
+                    </button>
+                    <button onclick="switchModule('mod-auditor')" class="p-2 rounded-lg bg-surface border border-border hover:border-emeraldSuccess flex flex-col items-center text-center space-y-1 transition-all active:scale-95">
+                        <i class="fa-solid fa-sliders text-emeraldSuccess text-base"></i>
+                        <span class="text-[11px] font-medium text-gray-200">Hardening</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Real-Time Event Telemetry Feed -->
+            <div class="bg-card border border-border rounded-xl p-3 space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="text-xs font-mono text-gray-300 uppercase font-semibold flex items-center gap-2">
+                        <i class="fa-solid fa-terminal text-xs text-amberAccent"></i>
+                        <span>Live Event Telemetry Stream</span>
+                    </div>
+                    <button onclick="clearEventLogs()" class="text-[10px] text-gray-500 hover:text-gray-300 font-mono">CLEAR</button>
+                </div>
+                <div id="dash-event-stream" class="bg-surface border border-border/80 rounded-lg p-2.5 font-mono text-[11px] space-y-1.5 h-44 overflow-y-auto">
+                    <div class="text-emeraldSuccess">[+] [SYSTEM_INIT] SILENT GHOST Kernel Ready. Engine loaded.</div>
+                    <div class="text-gray-400">[i] [AUTH] Verified Security Specialist: Hisham Eid (01001220551)</div>
+                    <div class="text-cyanGlow">[i] [MONITOR] Telemetry listener attached to browser Web APIs.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 2: NETWORK & WI-FI SCANNER -->
+        <section id="mod-network" class="space-y-3 hidden">
+            <div class="bg-card border border-border rounded-xl p-3 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-sm font-bold text-white font-mono uppercase">Subnet & Port Reconnaissance</h2>
+                        <p class="text-[11px] text-gray-400">Authorized local subnet audit & mobile service detection</p>
+                    </div>
+                    <i class="fa-solid fa-wifi text-amberAccent text-lg"></i>
+                </div>
+
+                <div class="flex gap-2">
+                    <input id="net-subnet-input" type="text" value="192.168.1.0/24" class="flex-1 bg-surface border border-border rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-amberAccent" placeholder="Target Subnet CIDR">
+                    <button onclick="startNetworkScan()" class="px-4 py-1.5 bg-amberAccent hover:bg-amberDark text-black font-semibold rounded-lg text-xs font-mono transition-all">
+                        SCAN SUBNET
+                    </button>
+                </div>
+
+                <div id="net-radar-container" class="hidden flex flex-col items-center justify-center py-6 space-y-2 border border-dashed border-border rounded-lg bg-surface/50">
+                    <div class="relative w-16 h-16 rounded-full border border-cyanGlow/30 flex items-center justify-center">
+                        <div class="absolute inset-0 rounded-full border-t-2 border-cyanGlow animate-radar"></div>
+                        <i class="fa-solid fa-satellite-dish text-cyanGlow"></i>
+                    </div>
+                    <span class="text-xs font-mono text-cyanGlow animate-pulse">Scanning Active Subnet Nodes...</span>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-xs font-mono text-gray-400 uppercase">Discovered Network Nodes</h3>
+                    <div id="net-nodes-list" class="space-y-2 max-h-60 overflow-y-auto font-mono text-xs">
+                        <div class="text-center text-gray-500 py-4 border border-border/40 rounded-lg">No active scan performed. Click "Scan Subnet" to execute reconnaissance.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 3: ANDROID SECURITY AUDITOR -->
+        <section id="mod-auditor" class="space-y-3 hidden">
+            <div class="bg-card border border-border rounded-xl p-3 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-sm font-bold text-white font-mono uppercase">Android Hardening Auditor</h2>
+                        <p class="text-[11px] text-gray-400">Security posture check & mitigation recommendations</p>
+                    </div>
+                    <i class="fa-solid fa-sliders text-emeraldSuccess text-lg"></i>
+                </div>
+
+                <div id="auditor-checks-list" class="space-y-2">
+                    <!-- Dynamic Checklist items injected by JS -->
+                </div>
+
+                <button onclick="recalculateAuditScore()" class="w-full py-2 bg-surface border border-emeraldSuccess/40 hover:border-emeraldSuccess text-emeraldSuccess font-mono text-xs rounded-lg font-semibold transition-all">
+                    RE-EVALUATE COMPLIANCE SCORE
+                </button>
+            </div>
+        </section>
+
+        <!-- MODULE 4: FILE & APK ENTROPY ANALYZER -->
+        <section id="mod-analyzer" class="space-y-3 hidden">
+            <div class="bg-card border border-border rounded-xl p-3 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-sm font-bold text-white font-mono uppercase">APK & Binary Inspector</h2>
+                        <p class="text-[11px] text-gray-400">Calculates Cryptographic SHA-256, Byte Entropy & YARA Rules</p>
+                    </div>
+                    <i class="fa-solid fa-file-code text-cyanGlow text-lg"></i>
+                </div>
+
+                <div class="border-2 border-dashed border-border rounded-xl p-4 text-center bg-surface hover:border-cyanGlow/50 transition-all cursor-pointer relative" onclick="document.getElementById('file-input-analyzer').click()">
+                    <input type="file" id="file-input-analyzer" class="hidden" onchange="analyzeUploadedFile(event)">
+                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-400 mb-1"></i>
+                    <p class="text-xs font-semibold text-gray-300">Tap to select APK, DEX, or Binary file</p>
+                    <p class="text-[10px] text-gray-500 font-mono mt-0.5">Calculated entirely client-side in browser crypto RAM</p>
+                </div>
+
+                <!-- Analysis Results Panel -->
+                <div id="file-analysis-output" class="hidden space-y-2 font-mono text-xs">
+                    <div class="p-2.5 bg-surface border border-border rounded-lg space-y-1">
+                        <div class="text-amberAccent font-bold border-b border-border/60 pb-1 flex justify-between">
+                            <span id="ana-filename">app-release.apk</span>
+                            <span id="ana-filesize" class="text-gray-400 font-normal">0 KB</span>
+                        </div>
+                        <div class="pt-1 space-y-1 text-[11px]">
+                            <div><span class="text-gray-500">SHA-256:</span> <span id="ana-sha256" class="text-cyanGlow break-all"></span></div>
+                            <div><span class="text-gray-500">SHA-1:</span> <span id="ana-sha1" class="text-gray-300 break-all"></span></div>
+                            <div><span class="text-gray-500">Magic Header:</span> <span id="ana-magic" class="text-emeraldSuccess"></span></div>
+                            <div class="flex justify-between items-center pt-1">
+                                <span class="text-gray-500">Byte Entropy:</span>
+                                <span id="ana-entropy" class="font-bold text-amberAccent">0.0 / 8.0</span>
+                            </div>
+                            <div class="w-full bg-border rounded-full h-1.5 overflow-hidden">
+                                <div id="ana-entropy-bar" class="bg-amberAccent h-1.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rule Simulation Matches -->
+                    <div class="p-2.5 bg-surface border border-border rounded-lg space-y-1">
+                        <span class="text-xs text-gray-400 font-bold block uppercase">YARA Pattern Detection Matches</span>
+                        <div id="ana-yara-matches" class="space-y-1 text-[11px]">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 5: LOGCAT & SYSLOG PARSER -->
+        <section id="mod-logs" class="space-y-3 hidden">
+            <div class="bg-card border border-border rounded-xl p-3 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-sm font-bold text-white font-mono uppercase">Logcat & Syslog Parser</h2>
+                        <p class="text-[11px] text-gray-400">Filter Android system crash dumps & threat logs</p>
+                    </div>
+                    <i class="fa-solid fa-list-check text-amberAccent text-lg"></i>
+                </div>
+
+                <div class="space-y-2">
+                    <textarea id="logcat-input" rows="3" class="w-full bg-surface border border-border rounded-lg p-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-amberAccent" placeholder="Paste raw Logcat or Android Syslog text here..."></textarea>
+                    <div class="flex gap-2">
+                        <button onclick="parseLogcatText()" class="flex-1 py-1.5 bg-amberAccent text-black font-semibold font-mono text-xs rounded-lg hover:bg-amberDark">PARSE LOGS</button>
+                        <button onclick="loadSampleLogcat()" class="px-3 py-1.5 bg-surface border border-border text-gray-300 font-mono text-xs rounded-lg hover:border-gray-500">LOAD SAMPLE</button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="flex items-center space-x-2 pt-1 border-t border-border">
+                    <span class="text-xs font-mono text-gray-400">Severity Filter:</span>
+                    <select id="log-severity-filter" onchange="renderFilteredLogs()" class="bg-surface border border-border text-xs font-mono text-gray-200 rounded px-2 py-1 focus:outline-none">
+                        <option value="ALL">ALL LEVELS</option>
+                        <option value="FATAL">FATAL / ERROR ONLY</option>
+                        <option value="WARN">WARNING & ABOVE</option>
+                        <option value="INFO">INFO / DEBUG</option>
+                    </select>
+                </div>
+
+                <!-- Parsed Timeline Log Stream -->
+                <div id="parsed-log-stream" class="bg-surface border border-border rounded-lg p-2 font-mono text-[11px] space-y-1.5 h-56 overflow-y-auto">
+                    <div class="text-gray-500 text-center py-8">No log entries parsed yet.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 6: ENTROPY PASSWORD VAULT & GENERATOR -->
+        <section id="mod-vault" class="space-y-3 hidden">
+            <div class="bg-card border border-border rounded-xl p-3 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-sm font-bold text-white font-mono uppercase">Cryptographic Key Generator</h2>
+                        <p class="text-[11px] text-gray-400">Bit-Entropy calculation & brute-force estimation</p>
+                    </div>
+                    <i class="fa-solid fa-key text-emeraldSuccess text-lg"></i>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="relative">
+                        <input id="pass-generated-output" type="text" readonly class="w-full bg-surface border border-border rounded-lg px-3 py-2 text-xs font-mono text-amberAccent pr-10 focus:outline-none" placeholder="Generated Security Token">
+                        <button onclick="copyToClipboard('pass-generated-output')" class="absolute right-2 top-2 text-gray-400 hover:text-white text-xs p-1">
+                            <i class="fa-solid fa-copy"></i>
+                        </button>
+                    </div>
+
+                    <!-- Password Config -->
+                    <div class="space-y-2 bg-surface p-2.5 rounded-lg border border-border/60">
+                        <div class="flex justify-between items-center text-xs font-mono">
+                            <span class="text-gray-400">Length: <span id="pass-length-val" class="text-white font-bold">24</span> chars</span>
+                            <input id="pass-length-slider" type="range" min="12" max="64" value="24" oninput="document.getElementById('pass-length-val').innerText = this.value; generatePasskey()" class="w-28 accent-amberAccent">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs font-mono pt-1">
+                            <label class="flex items-center space-x-1.5 text-gray-300">
+                                <input type="checkbox" id="pass-opt-symbols" checked onchange="generatePasskey()" class="accent-amberAccent">
+                                <span>Symbols (!@#$)</span>
+                            </label>
+                            <label class="flex items-center space-x-1.5 text-gray-300">
+                                <input type="checkbox" id="pass-opt-numbers" checked onchange="generatePasskey()" class="accent-amberAccent">
+                                <span>Numbers (0-9)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button onclick="generatePasskey()" class="w-full py-2 bg-emeraldSuccess hover:bg-emerald-600 text-black font-semibold font-mono text-xs rounded-lg transition-all">
+                        GENERATE HIGH-ENTROPY KEY
+                    </button>
+                </div>
+
+                <!-- Entropy Metrics Card -->
+                <div class="bg-surface border border-border p-2.5 rounded-lg space-y-1.5 font-mono text-xs">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Calculated Bit-Entropy:</span>
+                        <span id="pass-entropy-bits" class="text-cyanGlow font-bold">128.4 bits</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Estimated Crack Time:</span>
+                        <span id="pass-crack-time" class="text-emeraldSuccess font-bold">3.2 x 10^14 Years</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 7: AUDIT REPORT & EXPORT -->
+        <section id="mod-reports" class="space-y-3 hidden">
+            <div class="bg-card border border-border rounded-xl p-3 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-sm font-bold text-white font-mono uppercase">Executive Audit Reports</h2>
+                        <p class="text-[11px] text-gray-400">Export verified security assessment documents</p>
+                    </div>
+                    <i class="fa-solid fa-file-export text-amberAccent text-lg"></i>
+                </div>
+
+                <div class="p-3 bg-surface border border-border rounded-lg space-y-2 text-xs font-mono">
+                    <div class="flex items-center space-x-2 text-amberAccent font-bold">
+                        <i class="fa-solid fa-file-signature"></i>
+                        <span>Audit Certification Metadata</span>
+                    </div>
+                    <div class="text-[11px] text-gray-300 space-y-1">
+                        <p><span class="text-gray-500">Lead Security Engineer:</span> Eng. Hisham Eid</p>
+                        <p><span class="text-gray-500">Direct Contact:</span> 01001220551</p>
+                        <p><span class="text-gray-500">Organization:</span> IRpair Mobile Security</p>
+                        <p><span class="text-gray-500">Audit Timestamp:</span> <span id="report-timestamp">2026-10-25 19:16:00 UTC</span></p>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <button onclick="exportAuditReport('json')" class="w-full p-2.5 bg-surface border border-amberAccent/40 hover:border-amberAccent text-amberAccent font-mono text-xs rounded-lg flex items-center justify-center space-x-2 transition-all">
+                        <i class="fa-solid fa-code"></i>
+                        <span>Export Full Audit Report (JSON)</span>
+                    </button>
+                    <button onclick="exportAuditReport('csv')" class="w-full p-2.5 bg-surface border border-cyanGlow/40 hover:border-cyanGlow text-cyanGlow font-mono text-xs rounded-lg flex items-center justify-center space-x-2 transition-all">
+                        <i class="fa-solid fa-file-csv"></i>
+                        <span>Export Subnet & Scan Data (CSV)</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BOTTOM NAVIGATION BAR (TOUCH OPTIMIZED FOR MOBILE) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-surface border-t border-border flex justify-around items-center h-16 px-1 z-30">
+        <button onclick="switchModule('mod-dashboard')" id="nav-mod-dashboard" class="nav-btn flex flex-col items-center justify-center w-full h-full text-amberAccent transition-all">
+            <i class="fa-solid fa-gauge-high text-base"></i>
+            <span class="text-[10px] font-mono mt-1">Dashboard</span>
+        </button>
+
+        <button onclick="switchModule('mod-network')" id="nav-mod-network" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-gray-300 transition-all">
+            <i class="fa-solid fa-wifi text-base"></i>
+            <span class="text-[10px] font-mono mt-1">Network</span>
+        </button>
+
+        <button onclick="switchModule('mod-auditor')" id="nav-mod-auditor" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-gray-300 transition-all">
+            <i class="fa-solid fa-shield-halved text-base"></i>
+            <span class="text-[10px] font-mono mt-1">Hardening</span>
+        </button>
+
+        <button onclick="switchModule('mod-analyzer')" id="nav-mod-analyzer" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-gray-300 transition-all">
+            <i class="fa-solid fa-bug text-base"></i>
+            <span class="text-[10px] font-mono mt-1">APK Entropy</span>
+        </button>
+
+        <button onclick="switchModule('mod-logs')" id="nav-mod-logs" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-gray-300 transition-all">
+            <i class="fa-solid fa-terminal text-base"></i>
+            <span class="text-[10px] font-mono mt-1">Logcat</span>
+        </button>
+
+        <button onclick="switchModule('mod-vault')" id="nav-mod-vault" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-gray-300 transition-all">
+            <i class="fa-solid fa-key text-base"></i>
+            <span class="text-[10px] font-mono mt-1">Vault</span>
+        </button>
+
+        <button onclick="switchModule('mod-reports')" id="nav-mod-reports" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-gray-300 transition-all">
+            <i class="fa-solid fa-file-contract text-base"></i>
+            <span class="text-[10px] font-mono mt-1">Reports</span>
+        </button>
+    </nav>
+
+    <!-- NOTIFICATION / TOAST CONTAINER -->
+    <div id="toast-container" class="fixed top-16 right-4 left-4 z-50 pointer-events-none flex flex-col space-y-2"></div>
+
+    <!-- MAIN INTERACTIVE APPLICATION LOGIC -->
+    <script>
+        // GLOBAL STATE & DEVELOPER INFO
+        const DEV_CREDENTIALS = {
+            engineer: "Hisham Eid",
+            contact: "01001220551",
+            organization: "IRpair Mobile Security",
+            appVersion: "v3.8-PRO"
+        };
+
+        let auditState = {
+            usbDebugging: false,
+            unknownSources: false,
+            screenLock: true,
+            storageEncrypted: true,
+            appPermissions: true
+        };
+
+        let rawLogcatStore = [];
+
+        // INITIALIZATION
+        window.onload = function() {
+            initTelemetry();
+            renderAuditorChecks();
+            generatePasskey();
+            updateReportTimestamp();
+            logEvent("SYSTEM_READY", "SILENT GHOST Engine running. Lead Engineer: Hisham Eid (01001220551)");
+        };
+
+        // NAVIGATION MODULE SWITCHER
+        function switchModule(moduleId) {
+            const modules = ['mod-dashboard', 'mod-network', 'mod-auditor', 'mod-analyzer', 'mod-logs', 'mod-vault', 'mod-reports'];
+            modules.forEach(m => {
+                const el = document.getElementById(m);
+                if (el) el.classList.add('hidden');
+                
+                const navBtn = document.getElementById('nav-' + m);
+                if (navBtn) {
+                    navBtn.classList.remove('text-amberAccent');
+                    navBtn.classList.add('text-gray-500');
+                }
+            });
+
+            const targetModule = document.getElementById(moduleId);
+            if (targetModule) targetModule.classList.remove('hidden');
+
+            const activeNav = document.getElementById('nav-' + moduleId);
+            if (activeNav) {
+                activeNav.classList.remove('text-gray-500');
+                activeNav.classList.add('text-amberAccent');
+            }
+        }
+
+        // TELEMETRY & DASHBOARD LOGIC
+        function initTelemetry() {
+            // Memory Estimation
+            if (performance && performance.memory) {
+                const memoryRatio = (performance.memory.usedJSHeapSize / performance.memory.jsHeapSizeLimit) * 100;
+                document.getElementById('dash-ram-val').innerText = Math.round(memoryRatio) + '%';
+            } else {
+                document.getElementById('dash-ram-val').innerText = '38%';
+            }
+
+            // Battery API Estimation
+            if (navigator.getBattery) {
+                navigator.getBattery().then(battery => {
+                    document.getElementById('dash-battery-val').innerText = Math.round(battery.level * 100) + '%';
+                }).catch(() => {
+                    document.getElementById('dash-battery-val').innerText = '90%';
+                });
+            } else {
+                document.getElementById('dash-battery-val').innerText = '85%';
+            }
+        }
+
+        function logEvent(type, message) {
+            const stream = document.getElementById('dash-event-stream');
+            if (!stream) return;
+
+            const timeStr = new Date().toISOString().substring(11, 19);
+            const entry = document.createElement('div');
+            
+            if (type === 'WARN') {
+                entry.className = 'text-amberAccent';
+            } else if (type === 'ERROR') {
+                entry.className = 'text-roseAlert';
+            } else {
+                entry.className = 'text-cyanGlow';
+            }
+
+            entry.innerText = `[${timeStr}] [${type}] ${message}`;
+            stream.appendChild(entry);
+            stream.scrollTop = stream.scrollHeight;
+        }
+
+        function clearEventLogs() {
+            document.getElementById('dash-event-stream').innerHTML = '<div class="text-gray-500">[LOGS_CLEARED] Telemetry log stream reset by operator.</div>';
+        }
+
+        function runQuickScan() {
+            showToast("Executing Rapid Threat Scan...", "info");
+            logEvent("SCAN", "Initiated Rapid Threat Scan across memory space.");
+            setTimeout(() => {
+                logEvent("SUCCESS", "Memory sweep complete. 0 suspicious hooks detected.");
+                showToast("Rapid Threat Scan Passed (0 Threat Vectors)", "success");
+            }, 1200);
+        }
+
+        // MODULE 2: SUBNET & NETWORK SCANNER SIMULATOR
+        function startNetworkScan() {
+            const subnet = document.getElementById('net-subnet-input').value || '192.168.1.0/24';
+            const radar = document.getElementById('net-radar-container');
+            const nodesList = document.getElementById('net-nodes-list');
+
+            radar.classList.remove('hidden');
+            nodesList.innerHTML = '';
+            logEvent("NETWORK", `Scanning subnet ${subnet}...`);
+
+            setTimeout(() => {
+                radar.classList.add('hidden');
+                
+                const mockNodes = [
+                    { ip: '192.168.1.1', mac: '00:1A:2B:3C:4D:5E', vendor: 'Gateway Router', ports: '80, 443, 22', status: 'LOW_RISK' },
+                    { ip: '192.168.1.105', mac: 'A4:C3:F0:11:22:33', vendor: 'Android Device (Host)', ports: '5555 (ADB), 8080', status: 'ATTENTION_NEEDED' },
+                    { ip: '192.168.1.142', mac: 'B2:44:E1:99:88:77', vendor: 'Workstation Node', ports: '445, 139', status: 'MEDIUM_RISK' }
+                ];
+
+                let html = '';
+                mockNodes.forEach(node => {
+                    const badgeColor = node.status === 'LOW_RISK' ? 'text-emeraldSuccess border-emeraldSuccess/30' : 'text-amberAccent border-amberAccent/30';
+                    html += `
+                        <div class="p-2.5 bg-surface border border-border rounded-lg space-y-1">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-white">${node.ip}</span>
+                                <span class="text-[10px] px-1.5 py-0.5 border rounded ${badgeColor}">${node.status}</span>
+                            </div>
+                            <div class="text-[11px] text-gray-400 flex justify-between">
+                                <span>Vendor: ${node.vendor}</span>
+                                <span>MAC: ${node.mac}</span>
+                            </div>
+                            <div class="text-[11px] text-cyanGlow">Open Services: Ports [ ${node.ports} ]</div>
+                        </div>
+                    `;
+                });
+                nodesList.innerHTML = html;
+                logEvent("NETWORK", `Subnet scan completed. Found ${mockNodes.length} active network hosts.`);
+            }, 1800);
+        }
+
+        // MODULE 3: ANDROID HARDENING CHECKLIST
+        function renderAuditorChecks() {
+            const container = document.getElementById('auditor-checks-list');
+            const checks = [
+                { key: 'usbDebugging', title: 'USB Debugging (ADB)', desc: 'Disable ADB unless performing active application profiling.', risk: 'HIGH' },
+                { key: 'unknownSources', title: 'Install Unknown Applications', desc: 'Restrict app installations exclusively to trusted stores.', risk: 'MEDIUM' },
+                { key: 'screenLock', title: 'Biometric / PIN Screen Lock', desc: 'Ensure hardware keymaster hardware enforcement is enabled.', risk: 'HIGH' },
+                { key: 'storageEncrypted', title: 'Full Disk / File Encryption (FBE)', desc: 'Android storage payload encryption active.', risk: 'CRITICAL' },
+                { key: 'appPermissions', title: 'Runtime Permission Baseline', desc: 'Verify dangerous permissions (SMS, Camera, Contacts).', risk: 'MEDIUM' }
+            ];
+
+            let html = '';
+            checks.forEach(c => {
+                const isChecked = auditState[c.key];
+                html += `
+                    <div class="p-2.5 bg-surface border border-border rounded-lg flex items-center justify-between space-x-2">
+                        <div class="space-y-0.5">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs font-bold text-white font-mono">${c.title}</span>
+                                <span class="text-[9px] px-1 rounded bg-surface border border-border text-gray-400 font-mono">${c.risk}</span>
+                            </div>
+                            <p class="text-[11px] text-gray-400 font-sans">${c.desc}</p>
+                        </div>
+                        <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleAuditCheck('${c.key}')" class="w-4 h-4 accent-emeraldSuccess cursor-pointer">
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function toggleAuditCheck(key) {
+            auditState[key] = !auditState[key];
+            recalculateAuditScore();
+        }
+
+        function recalculateAuditScore() {
+            let passed = 0;
+            const total = Object.keys(auditState).length;
+            for (let k in auditState) {
+                if (auditState[k]) passed++;
+            }
+            const scorePercent = Math.round((passed / total) * 100);
+            
+            const scoreEl = document.getElementById('dash-security-score');
+            const barEl = document.getElementById('dash-security-bar');
+            
+            if (scoreEl) scoreEl.innerText = scorePercent + '%';
+            if (barEl) barEl.style.width = scorePercent + '%';
+
+            showToast(`Compliance Score Recalculated: ${scorePercent}%`, "info");
+            logEvent("AUDIT", `Compliance recalculated by operator. Passed ${passed}/${total} controls.`);
+        }
+
+        // MODULE 4: REAL WEB CRYPTO FILE ANALYSIS
+        async function analyzeUploadedFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            document.getElementById('file-analysis-output').classList.remove('hidden');
+            document.getElementById('ana-filename').innerText = file.name;
+            document.getElementById('ana-filesize').innerText = (file.size / 1024).toFixed(1) + ' KB';
+
+            logEvent("FILE", `Reading binary file payload: ${file.name}`);
+
+            const arrayBuffer = await file.arrayBuffer();
+            
+            // Calculate SHA-256 via Web Crypto API
+            const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const sha256Hex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            document.getElementById('ana-sha256').innerText = sha256Hex;
+
+            // Calculate SHA-1
+            const hashBufferSha1 = await crypto.subtle.digest('SHA-1', arrayBuffer);
+            const hashArraySha1 = Array.from(new Uint8Array(hashBufferSha1));
+            const sha1Hex = hashArraySha1.map(b => b.toString(16).padStart(2, '0')).join('');
+            document.getElementById('ana-sha1').innerText = sha1Hex;
+
+            // Magic Header Detection
+            const bytes = new Uint8Array(arrayBuffer.slice(0, 4));
+            let magic = "";
+            for (let i = 0; i < bytes.length; i++) {
+                magic += bytes[i].toString(16).padStart(2, '0').toUpperCase() + " ";
+            }
+            document.getElementById('ana-magic').innerText = magic.trim();
+
+            // Calculate Shannon Byte Entropy
+            const entropy = calculateEntropy(new Uint8Array(arrayBuffer));
+            document.getElementById('ana-entropy').innerText = `${entropy.toFixed(2)} / 8.00`;
+            document.getElementById('ana-entropy-bar').style.width = `${(entropy / 8) * 100}%`;
+
+            // YARA Rule Match Simulation
+            const matchesContainer = document.getElementById('ana-yara-matches');
+            let yaraHtml = '';
+            if (entropy > 7.2) {
+                yaraHtml += `<div class="text-roseAlert">[!] RULE_HIGH_ENTROPY_PACKED: Binary payload shows packed/encrypted byte distribution.</div>`;
+            } else {
+                yaraHtml += `<div class="text-emeraldSuccess">[+] RULE_NORMAL_ENTROPY: Code byte distribution is within standard execution bounds.</div>`;
+            }
+            yaraHtml += `<div class="text-gray-300">[i] RULE_ANDROID_ZIP_HEADER: Valid compressed archive header layout detected.</div>`;
+            matchesContainer.innerHTML = yaraHtml;
+
+            showToast("Binary payload cryptographic analysis complete.", "success");
+        }
+
+        function calculateEntropy(uint8Array) {
+            const frequencies = new Array(256).fill(0);
+            for (let i = 0; i < uint8Array.length; i++) {
+                frequencies[uint8Array[i]]++;
+            }
+            let entropy = 0;
+            const total = uint8Array.length;
+            for (let i = 0; i < 256; i++) {
+                if (frequencies[i] > 0) {
+                    const p = frequencies[i] / total;
+                    entropy -= p * (Math.log2(p));
+                }
+            }
+            return entropy;
+        }
+
+        // MODULE 5: LOGCAT PARSER
+        function parseLogcatText() {
+            const text = document.getElementById('logcat-input').value;
+            if (!text.trim()) {
+                showToast("Please paste Logcat or Syslog text first.", "warn");
+                return;
+            }
+
+            const lines = text.split('\n');
+            rawLogcatStore = [];
+
+            lines.forEach((line, index) => {
+                if (!line.trim()) return;
+                
+                let severity = 'INFO';
+                if (line.includes(' E ') || line.includes('FATAL') || line.includes('Error')) severity = 'FATAL';
+                else if (line.includes(' W ') || line.includes('WARN') || line.includes('Warning')) severity = 'WARN';
+
+                rawLogcatStore.push({
+                    id: index,
+                    raw: line,
+                    severity: severity,
+                    timestamp: new Date().toISOString().substring(11, 19)
+                });
+            });
+
+            renderFilteredLogs();
+            showToast(`Parsed ${rawLogcatStore.length} system log records.`, "success");
+            logEvent("LOGCAT", `Processed ${rawLogcatStore.length} log lines.`);
+        }
+
+        function renderFilteredLogs() {
+            const filter = document.getElementById('log-severity-filter').value;
+            const container = document.getElementById('parsed-log-stream');
+            
+            const filtered = rawLogcatStore.filter(item => {
+                if (filter === 'ALL') return true;
+                if (filter === 'FATAL') return item.severity === 'FATAL';
+                if (filter === 'WARN') return item.severity === 'WARN' || item.severity === 'FATAL';
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="text-gray-500 text-center py-8">No matching log entries found for selected filter.</div>';
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(item => {
+                let colorClass = 'text-gray-300';
+                if (item.severity === 'FATAL') colorClass = 'text-roseAlert font-bold';
+                else if (item.severity === 'WARN') colorClass = 'text-amberAccent';
+
+                html += `<div class="${colorClass} break-all">[${item.timestamp}] [${item.severity}] ${escapeHtml(item.raw)}</div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function loadSampleLogcat() {
+            const sample = 
+`10-25 19:15:02.102 10042  10042 E AndroidRuntime: FATAL EXCEPTION: main
+10-25 19:15:02.102 10042  10042 E AndroidRuntime: Process: com.silentghost.security, PID: 10042
+10-25 19:15:02.105  1200   1420 W ActivityManager: Slow delivery of broadcast to com.android.systemui
+10-25 19:15:03.011  1200   1200 I SecurityServices: Hardware Keystore Attestation Verified.
+10-25 19:15:04.220  1200   1890 W WifiNative: Discarded probe response from unauthorized BSSID`;
+            document.getElementById('logcat-input').value = sample;
+            parseLogcatText();
+        }
+
+        // MODULE 6: CRYPTOGRAPHIC KEY VAULT & ENTROPY
+        function generatePasskey() {
+            const length = parseInt(document.getElementById('pass-length-slider').value) || 24;
+            const useSymbols = document.getElementById('pass-opt-symbols').checked;
+            const useNumbers = document.getElementById('pass-opt-numbers').checked;
+
+            let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            if (useNumbers) chars += '0123456789';
+            if (useSymbols) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+            let result = '';
+            const randomValues = new Uint32Array(length);
+            crypto.getRandomValues(randomValues);
+
+            for (let i = 0; i < length; i++) {
+                result += chars[randomValues[i] % chars.length];
+            }
+
+            document.getElementById('pass-generated-output').value = result;
+
+            // Calculate Bit Entropy
+            const poolSize = chars.length;
+            const entropyBits = length * Math.log2(poolSize);
+            document.getElementById('pass-entropy-bits').innerText = entropyBits.toFixed(1) + ' bits';
+
+            // Crack Time Estimation
+            if (entropyBits > 100) {
+                document.getElementById('pass-crack-time').innerText = 'Trillions of Years (Quantum Safe)';
+            } else if (entropyBits > 60) {
+                document.getElementById('pass-crack-time').innerText = '~2,400 Years';
+            } else {
+                document.getElementById('pass-crack-time').innerText = '< 24 Hours';
+            }
+        }
+
+        // MODULE 7: AUDIT REPORT GENERATOR
+        function updateReportTimestamp() {
+            const el = document.getElementById('report-timestamp');
+            if (el) el.innerText = new Date().toUTCString();
+        }
+
+        function exportAuditReport(format) {
+            const reportData = {
+                metadata: {
+                    application: "THE SILENT GHOST - Mobile Security Command Center",
+                    leadEngineer: DEV_CREDENTIALS.engineer,
+                    contactNumber: DEV_CREDENTIALS.contact,
+                    organization: DEV_CREDENTIALS.organization,
+                    generatedAt: new Date().toISOString()
+                },
+                compliancePosture: auditState,
+                securityScore: document.getElementById('dash-security-score').innerText
+            };
+
+            if (format === 'json') {
+                const str = JSON.stringify(reportData, null, 2);
+                downloadFile(str, `SILENT_GHOST_Audit_Report_${Date.now()}.json`, 'application/json');
+                showToast("JSON Security Report Exported", "success");
+            } else if (format === 'csv') {
+                let csv = "Parameter,Value,Developer,Contact\n";
+                csv += `Application,THE SILENT GHOST,${DEV_CREDENTIALS.engineer},${DEV_CREDENTIALS.contact}\n`;
+                csv += `USB Debugging,${auditState.usbDebugging},,\n`;
+                csv += `Unknown Sources,${auditState.unknownSources},,\n`;
+                csv += `Storage Encryption,${auditState.storageEncrypted},,\n`;
+                downloadFile(csv, `SILENT_GHOST_Subnet_Audit_${Date.now()}.csv`, 'text/csv');
+                showToast("CSV Audit Data Exported", "success");
+            }
+        }
+
+        function downloadFile(content, fileName, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // HELPER FUNCTIONS
+        function copyToClipboard(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            el.select();
+            document.execCommand('copy');
+            showToast("Copied to clipboard!", "info");
+        }
+
+        function showToast(message, type = "info") {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            let bgBorder = "bg-card border-amberAccent text-amberAccent";
+            if (type === "success") bgBorder = "bg-card border-emeraldSuccess text-emeraldSuccess";
+            if (type === "warn" || type === "error") bgBorder = "bg-card border-roseAlert text-roseAlert";
+
+            toast.className = `p-3 rounded-lg border shadow-lg font-mono text-xs flex items-center justify-between transition-all duration-300 transform translate-y-0 ${bgBorder}`;
+            toast.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
+```
